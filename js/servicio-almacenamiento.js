@@ -10,22 +10,21 @@
  * @returns {string|null}
  */
 function getStorageApiUrl() {
-  // 1. Si se configuró una URL pública en configuracion-constantes.js (para cuando esté en línea)
-  if (typeof PUBLIC_API_URL !== 'undefined' && PUBLIC_API_URL && PUBLIC_API_URL.trim()) {
-    let clean = PUBLIC_API_URL.trim().replace(/\/+$/, '');
-    if (!clean.endsWith('/storage.php') && !clean.endsWith('/api/storage')) {
-      clean = clean.endsWith('/api') ? `${clean}/storage.php` : `${clean}/api/storage.php`;
-    }
-    return clean;
-  }
-
-  // 2. Conexión automática local (Laragon Apache en puerto 80)
+  // Use Laragon directly on this PC, even when the public tunnel is configured.
   if (
     window.location.hostname === 'localhost' ||
     window.location.hostname === '127.0.0.1' ||
     window.location.protocol === 'file:'
   ) {
     return 'http://localhost/seguimiento-radicacion/Logica/api/storage.php';
+  }
+
+  if (typeof PUBLIC_API_URL !== 'undefined' && PUBLIC_API_URL && PUBLIC_API_URL.trim()) {
+    let clean = PUBLIC_API_URL.trim().replace(/\/+$/, '');
+    if (!clean.endsWith('/storage.php') && !clean.endsWith('/api/storage')) {
+      clean = clean.endsWith('/api') ? `${clean}/storage.php` : `${clean}/api/storage.php`;
+    }
+    return clean;
   }
 
   // GitHub Pages solo sirve archivos estáticos; PHP debe configurarse en otro servidor.
