@@ -37,6 +37,7 @@ async function loadData() {
     if (window.storage.apiConfigured) {
       console.error('No se pudieron cargar los registros desde la base de datos', e);
       records = [];
+      updateStorageStatus('Error: no se pudo conectar con MySQL.');
       if (typeof mostrarAlerta === 'function') {
         mostrarAlerta('No se pudieron cargar los datos desde MySQL. Verifica la conexión e intenta de nuevo.', 'danger', 'Error de conexión');
       }
@@ -67,6 +68,7 @@ async function saveData() {
   } catch (e) {
     console.error('No se pudo guardar la información', e);
     if (window.storage.apiConfigured) {
+      updateStorageStatus('Error: no se pudieron guardar los cambios en MySQL.');
       if (typeof mostrarAlerta === 'function') {
         mostrarAlerta('No se guardaron los cambios en MySQL. Verifica tu conexión e inténtalo de nuevo.', 'danger', 'Error al guardar');
       }

@@ -64,6 +64,11 @@ function showSignupForm() {
   document.getElementById('signup-error').style.display = 'none';
 }
 
+function updateStorageStatus(message) {
+  const status = document.getElementById('storage-status');
+  if (status) status.textContent = message;
+}
+
 /**
  * Selecciona aleatoriamente una imagen de fondo para la pantalla de login
  */
@@ -80,11 +85,13 @@ function setRandomLoginBackground() {
 async function initAuth() {
   setRandomLoginBackground();
   if (window.storage.apiConfigured) {
+    updateStorageStatus('Inicia sesión para conectar con MySQL.');
     showLoginForm();
     return;
   }
 
   if (window.location.hostname.endsWith('.github.io')) {
+    updateStorageStatus('Sin conexión a MySQL: los datos solo se guardan en este navegador.');
     const loginSubtitle = document.querySelector('#login-section .login-sub');
     if (loginSubtitle) {
       loginSubtitle.textContent = 'Esta página aún no está conectada a MySQL. Sin una API configurada, los datos solo se guardan en este navegador.';
@@ -103,6 +110,9 @@ async function initAuth() {
  * Ejecuta las acciones posteriores a un login exitoso
  */
 async function onLoginSuccess() {
+  if (window.storage.apiConfigured) {
+    updateStorageStatus('Conectado a MySQL · datos compartidos en esta base.');
+  }
   document.getElementById('login-overlay').style.display = 'none';
   document.getElementById('app-content').style.display = 'block';
   document.getElementById('logged-user-label').textContent = currentUser + ' · ' + (ROLE_LABELS[currentRole] || '');
@@ -227,6 +237,9 @@ document.getElementById('btn-logout')?.addEventListener('click', () => {
   document.getElementById('login-overlay').style.display = 'flex';
   setRandomLoginBackground();
   showLoginForm();
+  if (window.storage.apiConfigured) {
+    updateStorageStatus('Inicia sesión para conectar con MySQL.');
+  }
   if (typeof mostrarToast === 'function') {
     mostrarToast('Sesión cerrada', 'Has salido del sistema de radicación.', 'info');
   }
