@@ -22,8 +22,8 @@ const STORAGE_KEY = 'radicacion:records';
 const USERS_KEY = 'radicacion:users';
 const ACTIVITY_KEY = 'radicacion:activity_log';
 
-// URL HTTPS del endpoint de Laragon al usar GitHub Pages; incluye la ruta completa a storage.php.
-var PUBLIC_API_URL = '';
+// The tunnel must remain active while GitHub Pages uses the local database.
+var PUBLIC_API_URL = 'https://violet-colts-stop.loca.lt/storage.php';
 
 const ROLE_LABELS = {
   admin: 'Administrador',
