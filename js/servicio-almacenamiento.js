@@ -37,8 +37,41 @@ function getStorageApiUrl() {
   return '../Logica/api/storage.php';
 }
 
+let storageApiToken = null;
+
+async function readApiResponse(response) {
+  const data = await response.json();
+  if (!response.ok) {
+    throw new Error(data && data.error ? data.error : `La API respondió HTTP ${response.status}`);
+  }
+  return data;
+}
+
 if (!window.storage) {
   window.storage = {
+    get apiConfigured() {
+      return Boolean(getStorageApiUrl());
+    },
+
+    async login(username, password) {
+      const apiUrl = getStorageApiUrl();
+      if (!apiUrl) throw new Error('No hay una API de base de datos configurada');
+
+      const authUrl = apiUrl.replace(/storage\.php(?:\?.*)?$/, 'auth.php');
+      const response = await fetch(authUrl, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ username, password })
+      });
+      const data = await readApiResponse(response);
+      storageApiToken = data.token;
+      return data.user;
+    },
+
+    logout() {
+      storageApiToken = null;
+    },
+
     /**
      * Obtiene un registro por clave desde MySQL automáticamente
      * @param {string} key Clave a consultar
@@ -51,18 +84,14 @@ if (!window.storage) {
         return value === null ? null : { value };
       }
 
-      try {
-        const separator = apiUrl.includes('?') ? '&' : '?';
-        const target = `${apiUrl}${separator}key=${encodeURIComponent(key)}`;
-        const response = await fetch(target, { cache: 'no-store' });
-        if (!response.ok) throw new Error(`API MySQL respondió HTTP ${response.status}`);
-        const data = await response.json();
-        return { value: data && Object.prototype.hasOwnProperty.call(data, 'value') ? data.value : null };
-      } catch (error) {
-        console.warn('No se pudo consultar la API de almacenamiento; se usará localStorage.', error);
-        const value = localStorage.getItem(key);
-        return value === null ? null : { value };
-      }
+      const separator = apiUrl.includes('?') ? '&' : '?';
+      const target = `${apiUrl}${separator}key=${encodeURIComponent(key)}`;
+      const response = await fetch(target, {
+        cache: 'no-store',
+        headers: storageApiToken ? { Authorization: `Bearer ${storageApiToken}` } : {}
+      });
+      const data = await readApiResponse(response);
+      return { value: data && Object.prototype.hasOwnProperty.call(data, 'value') ? data.value : null };
     },
 
     /**
@@ -79,21 +108,17 @@ if (!window.storage) {
         return { value };
       }
 
-      try {
-        const response = await fetch(apiUrl, {
-          method: 'POST',
-          headers: { 'Content-Type': 'application/json' },
-          body: JSON.stringify({ key, value })
-        });
-        if (!response.ok) throw new Error(`API MySQL respondió HTTP ${response.status}`);
-        const data = await response.json();
-        localStorage.setItem(key, localValue);
-        return data;
-      } catch (error) {
-        console.warn('No se pudo guardar en la API de almacenamiento; se usará localStorage.', error);
-        localStorage.setItem(key, localValue);
-        return { value };
-      }
+      const response = await fetch(apiUrl, {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+          ...(storageApiToken ? { Authorization: `Bearer ${storageApiToken}` } : {})
+        },
+        body: JSON.stringify({ key, value })
+      });
+      const data = await readApiResponse(response);
+      localStorage.setItem(key, localValue);
+      return data;
     }
   };
 }

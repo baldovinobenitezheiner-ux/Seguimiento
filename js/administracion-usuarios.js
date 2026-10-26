@@ -118,13 +118,22 @@ document.addEventListener('click', (e) => {
 });
 
 // Apertura y cierre del modal de administración de usuarios
-document.getElementById('menu-item-usuarios')?.addEventListener('click', () => {
+document.getElementById('menu-item-usuarios')?.addEventListener('click', async () => {
   const dd = document.getElementById('admin-dropdown');
   if (dd) dd.style.display = 'none';
   const errEl = document.getElementById('admin-panel-error');
   if (errEl) errEl.style.display = 'none';
   resetUserForm();
-  renderUsersTable();
+  try {
+    await loadUsers();
+    renderUsersTable();
+  } catch (error) {
+    console.error('No se pudieron cargar los usuarios', error);
+    if (errEl) {
+      errEl.textContent = 'No se pudieron cargar los usuarios desde MySQL.';
+      errEl.style.display = 'block';
+    }
+  }
   const overlay = document.getElementById('admin-panel-overlay');
   if (overlay) overlay.style.display = 'flex';
 });
@@ -155,8 +164,9 @@ document.getElementById('btn-add-user')?.addEventListener('click', async () => {
     errEl.style.display = 'block';
     return;
   }
-  if (p && p.length < 4) {
-    errEl.textContent = 'La contraseña debe tener al menos 4 caracteres.';
+  const minimumLength = window.storage.apiConfigured ? 12 : 4;
+  if (p && p.length < minimumLength) {
+    errEl.textContent = `La contraseña debe tener al menos ${minimumLength} caracteres.`;
     errEl.style.display = 'block';
     return;
   }

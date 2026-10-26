@@ -24,6 +24,7 @@ async function loadUsers() {
     const res = await window.storage.get(USERS_KEY, true);
     users = (res && res.value) ? JSON.parse(res.value) : [];
   } catch (e) {
+    if (window.storage.apiConfigured) throw e;
     users = [];
   }
 }
@@ -36,6 +37,12 @@ async function saveUsers() {
     await window.storage.set(USERS_KEY, JSON.stringify(users), true);
   } catch (e) {
     console.error('No se pudo guardar usuarios', e);
+    if (window.storage.apiConfigured) {
+      if (typeof mostrarAlerta === 'function') {
+        mostrarAlerta('No se pudieron guardar los usuarios en MySQL. Verifica la conexión e inténtalo de nuevo.', 'danger', 'Error al guardar');
+      }
+      throw e;
+    }
   }
 }
 
@@ -72,6 +79,18 @@ function setRandomLoginBackground() {
  */
 async function initAuth() {
   setRandomLoginBackground();
+  if (window.storage.apiConfigured) {
+    showLoginForm();
+    return;
+  }
+
+  if (window.location.hostname.endsWith('.github.io')) {
+    const loginSubtitle = document.querySelector('#login-section .login-sub');
+    if (loginSubtitle) {
+      loginSubtitle.textContent = 'Esta página aún no está conectada a MySQL. Sin una API configurada, los datos solo se guardan en este navegador.';
+    }
+  }
+
   await loadUsers();
   if (users.length === 0) {
     showSignupForm();
@@ -83,7 +102,7 @@ async function initAuth() {
 /**
  * Ejecuta las acciones posteriores a un login exitoso
  */
-function onLoginSuccess() {
+async function onLoginSuccess() {
   document.getElementById('login-overlay').style.display = 'none';
   document.getElementById('app-content').style.display = 'block';
   document.getElementById('logged-user-label').textContent = currentUser + ' · ' + (ROLE_LABELS[currentRole] || '');
@@ -97,7 +116,7 @@ function onLoginSuccess() {
     mostrarToast('Bienvenido al sistema', `Sesión iniciada como ${currentUser} (${ROLE_LABELS[currentRole] || currentRole})`, 'success');
   }
   if (typeof loadData === 'function') {
-    loadData();
+    await loadData();
   }
 }
 
@@ -127,20 +146,31 @@ document.getElementById('btn-login')?.addEventListener('click', async () => {
     return;
   }
 
-  const hash = await hashPassword(p);
-  const match = users.find(us => us.username.toLowerCase() === u.toLowerCase() && us.hash === hash);
-  if (!match) {
-    errEl.textContent = 'Usuario o contraseña incorrectos.';
-    errEl.style.display = 'block';
-    return;
-  }
+  try {
+    let match;
+    if (window.storage.apiConfigured) {
+      match = await window.storage.login(u, p);
+    } else {
+      const hash = await hashPassword(p);
+      match = users.find(us => us.username.toLowerCase() === u.toLowerCase() && us.hash === hash);
+    }
+    if (!match) {
+      errEl.textContent = 'Usuario o contraseña incorrectos.';
+      errEl.style.display = 'block';
+      return;
+    }
 
-  currentUser = match.username;
-  currentRole = match.role;
-  if (typeof logActivity === 'function') {
-    await logActivity('login', 'Inicio de sesión');
+    currentUser = match.username;
+    currentRole = match.role;
+    if (typeof logActivity === 'function') {
+      await logActivity('login', 'Inicio de sesión');
+    }
+    await onLoginSuccess();
+  } catch (error) {
+    console.error('No se pudo iniciar sesión', error);
+    errEl.textContent = error.message || 'No se pudo conectar con la base de datos.';
+    errEl.style.display = 'block';
   }
-  onLoginSuccess();
 });
 
 // Listener para el botón de Crear Administrador Principal
@@ -150,13 +180,20 @@ document.getElementById('btn-signup')?.addEventListener('click', async () => {
   const p2 = document.getElementById('signup-pass2').value;
   const errEl = document.getElementById('signup-error');
 
+  if (window.storage.apiConfigured) {
+    errEl.textContent = 'La creación inicial de usuarios debe hacerse desde el administrador local de Laragon.';
+    errEl.style.display = 'block';
+    return;
+  }
+
   if (!u || !p || !p2) {
     errEl.textContent = 'Completa todos los campos.';
     errEl.style.display = 'block';
     return;
   }
-  if (p.length < 4) {
-    errEl.textContent = 'La contraseña debe tener al menos 4 caracteres.';
+  const minimumLength = window.storage.apiConfigured ? 12 : 4;
+  if (p.length < minimumLength) {
+    errEl.textContent = `La contraseña debe tener al menos ${minimumLength} caracteres.`;
     errEl.style.display = 'block';
     return;
   }
@@ -180,6 +217,7 @@ document.getElementById('btn-signup')?.addEventListener('click', async () => {
 
 // Listener para cerrar sesión
 document.getElementById('btn-logout')?.addEventListener('click', () => {
+  window.storage.logout();
   currentUser = null;
   currentRole = null;
   document.getElementById('app-content').style.display = 'none';

@@ -34,6 +34,15 @@ async function loadData() {
       await saveData();
     }
   } catch (e) {
+    if (window.storage.apiConfigured) {
+      console.error('No se pudieron cargar los registros desde la base de datos', e);
+      records = [];
+      if (typeof mostrarAlerta === 'function') {
+        mostrarAlerta('No se pudieron cargar los datos desde MySQL. Verifica la conexión e intenta de nuevo.', 'danger', 'Error de conexión');
+      }
+      return;
+    }
+
     records = seedToRecords();
     try { await saveData(); } catch (e2) {}
   }
@@ -57,6 +66,12 @@ async function saveData() {
     await window.storage.set(STORAGE_KEY, JSON.stringify(records), true);
   } catch (e) {
     console.error('No se pudo guardar la información', e);
+    if (window.storage.apiConfigured) {
+      if (typeof mostrarAlerta === 'function') {
+        mostrarAlerta('No se guardaron los cambios en MySQL. Verifica tu conexión e inténtalo de nuevo.', 'danger', 'Error al guardar');
+      }
+      throw e;
+    }
   }
 }
 

@@ -22,8 +22,7 @@ const STORAGE_KEY = 'radicacion:records';
 const USERS_KEY = 'radicacion:users';
 const ACTIVITY_KEY = 'radicacion:activity_log';
 
-// URL de la API MySQL en Laragon. Si se aloja en línea, puede colocarse la URL del túnel (ej. https://mi-tunel.loca.lt)
-// o configurarse interactivamente desde el botón de Conexión en la interfaz.
+// URL HTTPS del endpoint de Laragon al usar GitHub Pages; incluye la ruta completa a storage.php.
 var PUBLIC_API_URL = '';
 
 const ROLE_LABELS = {
