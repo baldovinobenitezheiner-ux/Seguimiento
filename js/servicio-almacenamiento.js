@@ -59,7 +59,10 @@ if (!window.storage) {
       const authUrl = apiUrl.replace(/storage\.php(?:\?.*)?$/, 'auth.php');
       const response = await fetch(authUrl, {
         method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
+        headers: {
+          'Content-Type': 'application/json',
+          'Bypass-Tunnel-Reminder': 'true'
+        },
         body: JSON.stringify({ username, password })
       });
       const data = await readApiResponse(response);
@@ -87,7 +90,10 @@ if (!window.storage) {
       const target = `${apiUrl}${separator}key=${encodeURIComponent(key)}`;
       const response = await fetch(target, {
         cache: 'no-store',
-        headers: storageApiToken ? { Authorization: `Bearer ${storageApiToken}` } : {}
+        headers: {
+          'Bypass-Tunnel-Reminder': 'true',
+          ...(storageApiToken ? { Authorization: `Bearer ${storageApiToken}` } : {})
+        }
       });
       const data = await readApiResponse(response);
       return { value: data && Object.prototype.hasOwnProperty.call(data, 'value') ? data.value : null };
@@ -111,6 +117,7 @@ if (!window.storage) {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
+          'Bypass-Tunnel-Reminder': 'true',
           ...(storageApiToken ? { Authorization: `Bearer ${storageApiToken}` } : {})
         },
         body: JSON.stringify({ key, value })
