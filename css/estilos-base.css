@@ -1,0 +1,66 @@
+/* ==========================================================================
+   Variables y Estilos Base
+   Archivo: css/estilos-base.css
+   Descripción: Configuración de variables de color, tipografía general,
+                reseteo de márgenes y contenedor principal de la aplicación.
+   ========================================================================== */
+
+:root {
+  --navy: #0c2340;
+  --navy2: #153a63;
+  --gold: #c9a227;
+  --gold-light: #f4e6b8;
+  --bg: #f3f5f8;
+  --card: #ffffff;
+  --border: #dfe3ea;
+  --text: #1c2733;
+  --muted: #66707c;
+  --danger: #b3261e;
+  --success: #1e7a4c;
+}
+
+* {
+  box-sizing: border-box;
+}
+
+body {
+  margin: 0;
+  font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Arial, sans-serif;
+  background: var(--bg);
+  color: var(--text);
+}
+
+header {
+  background: linear-gradient(135deg, var(--navy), var(--navy2));
+  color: #fff;
+  padding: 20px 24px;
+}
+
+header h1 {
+  margin: 0;
+  font-size: 20px;
+  font-weight: 600;
+}
+
+header p {
+  margin: 4px 0 0;
+  font-size: 13px;
+  color: #c9d4e3;
+}
+
+.header-row {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 10px;
+}
+
+.wrap {
+  max-width: 1200px;
+  margin: 0 auto;
+  padding: 20px;
+}
+
+#app-content {
+  display: none;
+}

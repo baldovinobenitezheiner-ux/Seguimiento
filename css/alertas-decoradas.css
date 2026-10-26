@@ -1,0 +1,382 @@
+/* ==========================================================================
+   Decoración y Estilos para Alertas, Modales y Notificaciones
+   Archivo: css/alertas-decoradas.css
+   Descripción: Estilos premium para alertas emergentes decoradas, diálogos de
+                confirmación con micro-animaciones, alertas flotantes (toasts)
+                y banners de error decorados para formularios y login.
+   ========================================================================== */
+
+/* --------------------------------------------------------------------------
+   1. Overlay y Contenedor del Modal de Alerta Decorado
+   -------------------------------------------------------------------------- */
+.alerta-overlay {
+  position: fixed;
+  inset: 0;
+  background: rgba(4, 14, 31, 0.72);
+  backdrop-filter: blur(8px);
+  -webkit-backdrop-filter: blur(8px);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  z-index: 9999;
+  padding: 20px;
+  opacity: 0;
+  visibility: hidden;
+  transition: opacity .25s ease, visibility .25s ease;
+}
+
+.alerta-overlay.activa {
+  opacity: 1;
+  visibility: visible;
+}
+
+.alerta-card {
+  position: relative;
+  background: #ffffff;
+  border-radius: 18px;
+  width: min(100%, 460px);
+  max-height: calc(100dvh - 40px);
+  overflow-y: auto;
+  padding: 28px 24px 22px;
+  box-shadow: 0 24px 70px rgba(0, 0, 0, 0.38), 0 0 0 1px rgba(12, 35, 64, 0.08);
+  text-align: center;
+  transform: scale(0.9) translateY(16px);
+  transition: transform .28s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+}
+
+.alerta-overlay.activa .alerta-card {
+  transform: scale(1) translateY(0);
+}
+
+/* --------------------------------------------------------------------------
+   2. Iconos Decorativos con Anillos de Resplandor (Glow)
+   -------------------------------------------------------------------------- */
+.alerta-icono-wrap {
+  width: 64px;
+  height: 64px;
+  margin: 0 auto 16px;
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  position: relative;
+  animation: alerta-icono-pop .4s cubic-bezier(0.175, 0.885, 0.32, 1.275) both;
+}
+
+.alerta-icono-wrap svg {
+  width: 32px;
+  height: 32px;
+}
+
+@keyframes alerta-icono-pop {
+  from {
+    transform: scale(0.5);
+    opacity: 0;
+  }
+  to {
+    transform: scale(1);
+    opacity: 1;
+  }
+}
+
+/* Variantes de Color e Iconos según Tipo */
+.alerta-tipo-success .alerta-icono-wrap {
+  background: linear-gradient(135deg, #e3f8ec, #c8eed7);
+  color: #1e7a4c;
+  box-shadow: 0 0 0 8px rgba(30, 122, 76, 0.12), 0 8px 20px rgba(30, 122, 76, 0.2);
+}
+
+.alerta-tipo-error .alerta-icono-wrap {
+  background: linear-gradient(135deg, #fdeceb, #fbd2cf);
+  color: #b3261e;
+  box-shadow: 0 0 0 8px rgba(179, 38, 30, 0.12), 0 8px 20px rgba(179, 38, 30, 0.2);
+}
+
+.alerta-tipo-warning .alerta-icono-wrap {
+  background: linear-gradient(135deg, #fef7e6, #fde8b8);
+  color: #c9a227;
+  box-shadow: 0 0 0 8px rgba(201, 162, 39, 0.15), 0 8px 20px rgba(201, 162, 39, 0.25);
+}
+
+.alerta-tipo-info .alerta-icono-wrap {
+  background: linear-gradient(135deg, #e8f0fe, #d2e3fc);
+  color: #153a63;
+  box-shadow: 0 0 0 8px rgba(21, 58, 99, 0.12), 0 8px 20px rgba(21, 58, 99, 0.2);
+}
+
+.alerta-tipo-danger .alerta-icono-wrap {
+  background: linear-gradient(135deg, #fdeceb, #fbd2cf);
+  color: #b3261e;
+  box-shadow: 0 0 0 8px rgba(179, 38, 30, 0.14), 0 8px 20px rgba(179, 38, 30, 0.25);
+}
+
+/* Textos del Modal */
+.alerta-titulo {
+  font-size: 19px;
+  font-weight: 700;
+  color: #0c2340;
+  margin: 0 0 8px;
+  line-height: 1.3;
+}
+
+.alerta-cuerpo {
+  font-size: 13.5px;
+  color: #4b5563;
+  line-height: 1.55;
+  margin: 0 0 20px;
+  white-space: pre-line;
+  word-break: break-word;
+}
+
+/* Área de detalles formateada (ej. errores de Excel) */
+.alerta-detalles-box {
+  margin: 10px 0 18px;
+  padding: 10px 14px;
+  background: #f8f9fb;
+  border: 1px solid #dfe3ea;
+  border-radius: 8px;
+  font-size: 12px;
+  color: #374151;
+  text-align: left;
+  max-height: 160px;
+  overflow-y: auto;
+  line-height: 1.5;
+}
+
+.alerta-detalles-box ul {
+  margin: 0;
+  padding-left: 18px;
+}
+
+/* Botones de acción del Modal */
+.alerta-acciones {
+  display: flex;
+  gap: 10px;
+  justify-content: center;
+}
+
+.alerta-btn {
+  border: none;
+  border-radius: 8px;
+  padding: 10px 22px;
+  font-size: 13.5px;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all .18s ease;
+  min-width: 110px;
+}
+
+.alerta-btn:hover {
+  transform: translateY(-1px);
+  filter: brightness(1.06);
+}
+
+.alerta-btn-navy {
+  background: linear-gradient(135deg, #0c2340, #153a63);
+  color: #fff;
+  box-shadow: 0 4px 14px rgba(12, 35, 64, 0.25);
+}
+
+.alerta-btn-danger {
+  background: linear-gradient(135deg, #b3261e, #d32f2f);
+  color: #fff;
+  box-shadow: 0 4px 14px rgba(179, 38, 30, 0.3);
+}
+
+.alerta-btn-gold {
+  background: linear-gradient(135deg, #c9a227, #dfb93e);
+  color: #3a2e05;
+  box-shadow: 0 4px 14px rgba(201, 162, 39, 0.3);
+}
+
+.alerta-btn-cancelar {
+  background: #fff;
+  border: 1px solid #d1d5db;
+  color: #4b5563;
+}
+
+.alerta-btn-cancelar:hover {
+  background: #f3f4f6;
+}
+
+/* --------------------------------------------------------------------------
+   3. Alertas Flotantes / Notificaciones Push (Toasts)
+   -------------------------------------------------------------------------- */
+.contenedor-toasts {
+  position: fixed;
+  top: 20px;
+  right: 20px;
+  z-index: 10000;
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+  max-width: 360px;
+  width: calc(100% - 40px);
+  pointer-events: none;
+}
+
+.toast-item {
+  pointer-events: auto;
+  background: #ffffff;
+  border-radius: 12px;
+  padding: 12px 16px;
+  display: flex;
+  align-items: flex-start;
+  gap: 12px;
+  box-shadow: 0 12px 35px rgba(0, 0, 0, 0.16), 0 0 0 1px rgba(0, 0, 0, 0.05);
+  transform: translateX(120%);
+  opacity: 0;
+  transition: transform .32s cubic-bezier(0.175, 0.885, 0.32, 1.275), opacity .32s ease;
+  border-left: 4px solid #0c2340;
+  position: relative;
+  overflow: hidden;
+}
+
+.toast-item.visible {
+  transform: translateX(0);
+  opacity: 1;
+}
+
+.toast-item.saliendo {
+  transform: translateX(120%);
+  opacity: 0;
+}
+
+.toast-icono {
+  width: 22px;
+  height: 22px;
+  flex-shrink: 0;
+  margin-top: 1px;
+}
+
+.toast-contenido {
+  flex: 1;
+}
+
+.toast-titulo {
+  font-size: 13.5px;
+  font-weight: 700;
+  color: #0c2340;
+  margin: 0 0 2px;
+}
+
+.toast-mensaje {
+  font-size: 12px;
+  color: #556070;
+  margin: 0;
+  line-height: 1.4;
+}
+
+.toast-cerrar {
+  background: none;
+  border: none;
+  color: #9ca3af;
+  font-size: 16px;
+  line-height: 1;
+  cursor: pointer;
+  padding: 0;
+  margin-left: 4px;
+  transition: color .15s;
+}
+
+.toast-cerrar:hover {
+  color: #374151;
+}
+
+.toast-tipo-success { border-left-color: #1e7a4c; }
+.toast-tipo-success .toast-icono { color: #1e7a4c; }
+
+.toast-tipo-error { border-left-color: #b3261e; }
+.toast-tipo-error .toast-icono { color: #b3261e; }
+
+.toast-tipo-warning { border-left-color: #c9a227; }
+.toast-tipo-warning .toast-icono { color: #c9a227; }
+
+.toast-tipo-info { border-left-color: #153a63; }
+.toast-tipo-info .toast-icono { color: #153a63; }
+
+/* --------------------------------------------------------------------------
+   4. Decoración de Alertas Inline en Formularios y Pantallas de Acceso
+   -------------------------------------------------------------------------- */
+.login-error {
+  background: rgba(239, 68, 68, 0.16);
+  border: 1px solid rgba(255, 110, 110, 0.38);
+  border-radius: 8px;
+  padding: 10px 14px;
+  color: #ffd0d3;
+  font-size: 12.5px;
+  margin: 12px 0 0;
+  display: none;
+  align-items: center;
+  gap: 10px;
+  box-shadow: 0 4px 16px rgba(0, 0, 0, 0.25);
+  animation: alerta-shake 0.36s ease-in-out both;
+  backdrop-filter: blur(4px);
+}
+
+.login-error[style*="display: block"],
+.login-error[style*="display: flex"] {
+  display: flex !important;
+}
+
+.login-error::before {
+  content: "";
+  display: inline-block;
+  width: 18px;
+  height: 18px;
+  flex-shrink: 0;
+  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='%23ffb7bc'%3E%3Cpath d='M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm1 15h-2v-2h2v2zm0-4h-2V7h2v6z'/%3E%3C/svg%3E");
+  background-repeat: no-repeat;
+  background-size: contain;
+}
+
+.error-text {
+  background: #fdf2f2;
+  border: 1px solid #f8b4b4;
+  border-left: 4px solid var(--danger);
+  border-radius: 8px;
+  padding: 10px 14px;
+  color: var(--danger);
+  font-size: 12.5px;
+  font-weight: 500;
+  margin: 12px 0;
+  display: none;
+  align-items: center;
+  gap: 10px;
+  box-shadow: 0 3px 10px rgba(179, 38, 30, 0.08);
+  animation: alerta-slide 0.28s ease-out both;
+}
+
+.error-text[style*="display: block"],
+.error-text[style*="display: flex"] {
+  display: flex !important;
+}
+
+.error-text::before {
+  content: "";
+  display: inline-block;
+  width: 18px;
+  height: 18px;
+  flex-shrink: 0;
+  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='%23b3261e'%3E%3Cpath d='M1 21h22L12 2 1 21zm12-3h-2v-2h2v2zm0-4h-2v-4h2v4z'/%3E%3C/svg%3E");
+  background-repeat: no-repeat;
+  background-size: contain;
+}
+
+/* Micro-animaciones para Alertas */
+@keyframes alerta-shake {
+  0%, 100% { transform: translateX(0); }
+  20%, 60% { transform: translateX(-6px); }
+  40%, 80% { transform: translateX(6px); }
+}
+
+@keyframes alerta-slide {
+  from {
+    opacity: 0;
+    transform: translateY(-8px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}

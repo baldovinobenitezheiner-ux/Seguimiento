@@ -1,0 +1,150 @@
+/* ==========================================================================
+   Paneles y Modales de Administración
+   Archivo: css/paneles-administracion.css
+   Descripción: Estilos para el menú de administración, modal de gestión de
+                usuarios y modal de histórico de movimientos / auditoría.
+   ========================================================================== */
+
+.admin-menu-wrap {
+  position: relative;
+  display: inline-block;
+}
+
+.admin-dropdown {
+  position: absolute;
+  top: calc(100% + 6px);
+  right: 0;
+  background: #fff;
+  border: 1px solid var(--border);
+  border-radius: 8px;
+  box-shadow: 0 8px 24px rgba(0, 0, 0, 0.18);
+  min-width: 220px;
+  z-index: 1100;
+  overflow: hidden;
+}
+
+.admin-dropdown button {
+  display: block;
+  width: 100%;
+  text-align: left;
+  background: none;
+  border: none;
+  padding: 10px 14px;
+  font-size: 13px;
+  color: var(--text);
+  cursor: pointer;
+}
+
+.admin-dropdown button:hover {
+  background: #f3f5f8;
+}
+
+.admin-dropdown button + button {
+  border-top: 1px solid var(--border);
+}
+
+.activity-log-box {
+  width: min(100%, 1100px);
+  height: min(92dvh, 760px);
+  max-width: none;
+  max-height: none;
+  display: flex;
+  flex-direction: column;
+  padding: clamp(20px, 3vw, 30px);
+}
+
+.activity-log-box .table-scroll {
+  flex: 1;
+  max-height: none !important;
+  min-height: 0;
+  overflow: auto;
+}
+
+.activity-log-box table {
+  min-width: 680px;
+  color: #eef4ff;
+}
+
+.activity-log-box th {
+  color: #b9cae5;
+  border-bottom-color: rgba(183, 204, 246, .3);
+}
+
+.activity-log-box td {
+  color: #eef4ff;
+  border-bottom-color: rgba(183, 204, 246, .15);
+}
+
+.activity-log-box tr:hover td {
+  background: rgba(115, 221, 210, .1);
+}
+
+.admin-panel-box {
+  width: min(100%, 820px);
+  max-width: none !important;
+  max-height: calc(100dvh - 32px);
+  overflow-y: auto;
+  padding: clamp(22px, 3vw, 30px);
+}
+
+.admin-panel-box .table-scroll {
+  max-height: 280px !important;
+  overflow: auto;
+}
+
+.admin-panel-box table {
+  min-width: 520px;
+  color: #eef4ff;
+}
+
+.admin-panel-box th {
+  color: #b9cae5;
+  border-bottom-color: rgba(183, 204, 246, .3);
+}
+
+.admin-panel-box td {
+  color: #eef4ff;
+  border-bottom-color: rgba(183, 204, 246, .15);
+}
+
+.admin-panel-box tr:hover td {
+  background: rgba(115, 221, 210, .1);
+}
+
+.admin-panel-box .field label {
+  color: #b9cae5;
+}
+
+.admin-panel-box h2 {
+  color: #f4f7ff;
+}
+
+.admin-panel-box .login-sub {
+  color: #c0cde1;
+}
+
+.admin-panel-box .edit-btn {
+  color: #73ddd2;
+}
+
+@media(max-width: 420px) {
+  .login-overlay {
+    padding: 16px;
+  }
+
+  .login-box {
+    border-radius: 13px;
+  }
+
+  .activity-log-box {
+    width: 100%;
+    height: calc(100dvh - 24px);
+    padding: 18px 14px;
+  }
+
+  .admin-panel-box {
+    width: 100%;
+    max-height: calc(100dvh - 24px);
+    padding: 18px 14px;
+  }
+}

@@ -1,0 +1,208 @@
+/* ==========================================================================
+   Componentes de Interfaz de Usuario (UI)
+   Archivo: css/componentes-ui.css
+   Descripción: Estilos para botones, formularios, campos, tablas, tarjetas,
+                badges y elementos visuales reutilizables.
+   ========================================================================== */
+
+.field {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+}
+
+.field label {
+  font-size: 11px;
+  color: var(--muted);
+  font-weight: 600;
+  text-transform: uppercase;
+  letter-spacing: .03em;
+}
+
+select,
+input {
+  border: 1px solid var(--border);
+  border-radius: 6px;
+  padding: 7px 9px;
+  font-size: 13px;
+  background: #fff;
+  color: var(--text);
+  min-width: 140px;
+}
+
+select:focus,
+input:focus {
+  outline: 2px solid var(--gold);
+  outline-offset: 1px;
+}
+
+.btn {
+  border: none;
+  border-radius: 6px;
+  padding: 8px 16px;
+  font-size: 13px;
+  font-weight: 600;
+  cursor: pointer;
+  transition: opacity .15s;
+}
+
+.btn:hover {
+  opacity: .9;
+}
+
+.btn-gold {
+  background: var(--gold);
+  color: #3a2e05;
+}
+
+.btn-big {
+  font-size: 16px;
+  padding: 14px 32px;
+  border-radius: 8px;
+  box-shadow: 0 2px 6px rgba(201, 162, 39, 0.35);
+}
+
+.btn-navy {
+  background: var(--navy);
+  color: #fff;
+}
+
+.btn-outline {
+  background: #fff;
+  border: 1px solid var(--border);
+  color: var(--text);
+}
+
+.btn-danger {
+  background: #fdeceb;
+  color: var(--danger);
+  border: 1px solid #f3c6c2;
+}
+
+.del-btn,
+.user-del-btn {
+  background: none;
+  border: none;
+  color: var(--danger);
+  cursor: pointer;
+  font-size: 12px;
+  padding: 2px 6px;
+}
+
+.edit-btn {
+  background: none;
+  border: none;
+  color: var(--navy2);
+  cursor: pointer;
+  font-size: 12px;
+  padding: 2px 6px;
+  font-weight: 600;
+}
+
+.row-actions {
+  display: flex;
+  gap: 4px;
+  white-space: nowrap;
+}
+
+.card {
+  background: var(--card);
+  border: 1px solid var(--border);
+  border-radius: 10px;
+  padding: 16px;
+}
+
+.card h2 {
+  font-size: 14px;
+  margin: 0 0 12px;
+  color: var(--navy);
+  font-weight: 700;
+}
+
+.section-title {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-bottom: 14px;
+}
+
+table {
+  width: 100%;
+  border-collapse: collapse;
+  font-size: 12.5px;
+}
+
+th {
+  text-align: left;
+  padding: 8px 6px;
+  color: var(--muted);
+  font-weight: 600;
+  font-size: 11px;
+  text-transform: uppercase;
+  letter-spacing: .02em;
+  border-bottom: 2px solid var(--border);
+}
+
+td {
+  padding: 8px 6px;
+  border-bottom: 1px solid var(--border);
+  vertical-align: middle;
+}
+
+tr:hover td {
+  background: #f8f9fb;
+}
+
+.badge {
+  padding: 2px 8px;
+  border-radius: 20px;
+  font-size: 11px;
+  font-weight: 600;
+}
+
+.badge-confirmado {
+  background: #e3f3ea;
+  color: var(--success);
+}
+
+.badge-pendiente {
+  background: #fdf3da;
+  color: #8a6a08;
+}
+
+.rank {
+  font-weight: 700;
+  color: var(--gold);
+}
+
+.table-scroll {
+  max-height: 420px;
+  overflow-y: auto;
+}
+
+.error-text {
+  color: var(--danger);
+  font-size: 12px;
+  margin-top: 6px;
+  display: none;
+}
+
+.empty {
+  color: var(--muted);
+  font-size: 13px;
+  padding: 20px;
+  text-align: center;
+}
+
+.hint-text {
+  font-size: 12px;
+  color: var(--muted);
+  margin: -6px 0 12px;
+}
+
+.footer-note {
+  font-size: 11px;
+  color: var(--muted);
+  text-align: right;
+  margin-top: 6px;
+}

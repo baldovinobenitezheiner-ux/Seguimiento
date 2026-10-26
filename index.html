@@ -1,0 +1,334 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Seguimiento de Radicación</title>
+
+  <!-- Librerías Externas -->
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/4.4.1/chart.umd.js"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/xlsx/0.18.5/xlsx.full.min.js"></script>
+
+  <!-- Hojas de Estilo Organizadas por Módulo -->
+  <link rel="stylesheet" href="css/estilos-base.css">
+  <link rel="stylesheet" href="css/componentes-ui.css">
+  <link rel="stylesheet" href="css/autenticacion-login.css">
+  <link rel="stylesheet" href="css/paneles-administracion.css">
+  <link rel="stylesheet" href="css/dashboard-radicacion.css">
+  <link rel="stylesheet" href="css/alertas-decoradas.css">
+</head>
+<body>
+
+  <!-- Modal de Inicio de Sesión y Creación de Administrador -->
+  <div class="login-overlay" id="login-overlay">
+    <div class="login-box">
+      <div id="login-section">
+        <h2>Acceso al aplicativo</h2>
+        <p class="login-sub">Ingresa con tu usuario y contraseña.</p>
+        <input type="text" id="login-user" placeholder="Usuario" autocomplete="username">
+        <input type="password" id="login-pass" placeholder="Contraseña" autocomplete="current-password">
+        <button class="btn btn-navy" id="btn-login">Ingresar</button>
+        <p class="login-error" id="login-error"></p>
+      </div>
+
+      <div id="signup-section" style="display:none;">
+        <h2>Crear usuario administrador</h2>
+        <p class="login-sub">Aún no hay usuarios creados. Define el administrador principal: desde su cuenta podrá crear el resto de accesos.</p>
+        <input type="text" id="signup-user" placeholder="Usuario" autocomplete="username">
+        <input type="password" id="signup-pass" placeholder="Contraseña" autocomplete="new-password">
+        <input type="password" id="signup-pass2" placeholder="Confirmar contraseña" autocomplete="new-password">
+        <button class="btn btn-navy" id="btn-signup">Crear administrador</button>
+        <p class="login-error" id="signup-error"></p>
+      </div>
+
+      <p class="developer-credit">Desarrollador Heiner Baldovino Benitez<br>Cel. 3024352370</p>
+    </div>
+  </div>
+
+  <!-- Modal de Histórico de Movimientos / Auditoría -->
+  <div class="login-overlay" id="activity-log-overlay" style="display:none;">
+    <div class="login-box activity-log-box">
+      <div class="header-row" style="margin-bottom:4px;">
+        <h2 style="margin:0;">Histórico de movimientos</h2>
+        <button class="btn btn-outline" id="btn-close-activity-log">Cerrar</button>
+      </div>
+      <p class="login-sub">Registro de las acciones realizadas por cada usuario dentro del aplicativo.</p>
+      <div class="table-scroll">
+        <table id="tbl-activity-log">
+          <thead>
+            <tr>
+              <th>Fecha y hora</th>
+              <th>Usuario</th>
+              <th>Acción</th>
+              <th>Detalle</th>
+            </tr>
+          </thead>
+          <tbody></tbody>
+        </table>
+      </div>
+    </div>
+  </div>
+
+  <!-- Modal de Gestión y Permisos de Usuarios -->
+  <div class="login-overlay" id="admin-panel-overlay" style="display:none;">
+    <div class="login-box admin-panel-box">
+      <div class="header-row" style="margin-bottom:4px;">
+        <h2 style="margin:0;">Gestión de usuarios</h2>
+        <button class="btn btn-outline" id="btn-close-admin-panel">Cerrar</button>
+      </div>
+      <p class="login-sub">Crea los usuarios que tendrán acceso, con el permiso que quieras darles.</p>
+
+      <div class="table-scroll" style="margin-bottom:16px;">
+        <table id="tbl-usuarios">
+          <thead>
+            <tr>
+              <th>Usuario</th>
+              <th>Permiso</th>
+              <th></th>
+            </tr>
+          </thead>
+          <tbody></tbody>
+        </table>
+      </div>
+
+      <h2 id="admin-user-form-title" style="font-size:14px;">Agregar usuario</h2>
+      <input type="text" id="new-user-username" placeholder="Usuario" autocomplete="off">
+      <input type="password" id="new-user-pass" placeholder="Contraseña" autocomplete="new-password">
+      <input type="password" id="new-user-pass2" placeholder="Confirmar contraseña" autocomplete="new-password">
+      <div class="field" style="margin-bottom:10px;">
+        <label>Permiso</label>
+        <select id="new-user-role">
+          <option value="editor">Ingresar información y edición</option>
+          <option value="viewer">Solo vista y descarga de reporte</option>
+          <option value="admin">Administrador (gestiona usuarios)</option>
+        </select>
+      </div>
+      <div class="row-actions">
+        <button class="btn btn-navy" id="btn-add-user">Crear usuario</button>
+        <button class="btn btn-outline" id="btn-cancel-user-edit" style="display:none;">Cancelar</button>
+      </div>
+      <p class="login-error" id="admin-panel-error"></p>
+    </div>
+  </div>
+
+  <!-- Contenedor Principal de la Aplicación -->
+  <div id="app-content">
+    <header>
+      <div class="header-row">
+        <div>
+          <h1>Seguimiento de Radicaciónes ips</h1>
+          <p id="subtitle">Cargando datos...</p>
+        </div>
+        <div>
+          <span id="logged-user-label" style="font-size:12px; color:#c9d4e3; margin-right:10px;"></span>
+          <div class="admin-menu-wrap" id="admin-menu-wrap" style="display:none;">
+            <button class="logout-btn" id="btn-admin-menu-toggle">Administración ▾</button>
+            <div class="admin-dropdown" id="admin-dropdown" style="display:none;">
+              <button id="menu-item-usuarios">Gestión de usuarios</button>
+              <button id="menu-item-historico">Histórico de movimientos</button>
+            </div>
+          </div>
+          <button class="logout-btn" id="btn-logout">Cerrar sesión</button>
+        </div>
+      </div>
+    </header>
+
+    <div class="wrap">
+
+      <!-- Barra de Filtros y Herramientas -->
+      <div class="toolbar" id="toolbar">
+        <div class="field">
+          <label>Mes</label>
+          <select id="f-mes"><option value="">Todos</option></select>
+        </div>
+        <div class="field">
+          <label>Año</label>
+          <select id="f-anio"><option value="">Todos</option></select>
+        </div>
+        <div class="field">
+          <label>Entidad</label>
+          <select id="f-entidad"><option value="">Todas</option></select>
+        </div>
+        <div class="field">
+          <label>Radicador</label>
+          <select id="f-radicador"><option value="">Todos</option></select>
+        </div>
+        <div class="field">
+          <label>Estado</label>
+          <select id="f-estado"><option value="">Todos</option></select>
+        </div>
+        <div class="field">
+          <label>Fecha inicio</label>
+          <input type="date" id="f-fecha-inicio">
+        </div>
+        <div class="field">
+          <label>Fecha fin</label>
+          <input type="date" id="f-fecha-fin">
+        </div>
+        <button class="btn btn-outline" id="btn-clear">Limpiar filtros</button>
+        <div style="flex:1; display:flex; justify-content:center;">
+          <button class="btn btn-gold btn-big" id="btn-toggle-form">+ Anexar radicación</button>
+        </div>
+        <button class="btn btn-gold btn-big" id="btn-bulk-upload">Anexar radicación masiva</button>
+        <input type="file" id="bulk-file-input" accept=".xlsx,.xls" style="display:none;">
+        <button class="btn btn-outline" id="btn-export">Descargar reporte Excel</button>
+      </div>
+
+      <!-- Formulario para Anexar / Editar Radicación -->
+      <div class="card form-card" id="form-card">
+        <h2 id="form-title">Anexar nueva radicación</h2>
+        <p class="hint-text" id="form-hint">Si la entidad o el radicador no existen aún, simplemente escribe el nombre nuevo: se agrega automáticamente a la lista.</p>
+        <div class="form-grid">
+          <div class="field">
+            <label>N.° radicado</label>
+            <input type="number" id="n-radicado">
+          </div>
+          <div class="field">
+            <label>Valor</label>
+            <input type="number" id="n-valor" placeholder="1000000">
+          </div>
+          <div class="field">
+            <label>Entidad</label>
+            <input list="dl-entidades" id="n-entidad" placeholder="Escriba o elija (nueva o existente)">
+            <datalist id="dl-entidades"></datalist>
+          </div>
+          <div class="field">
+            <label>Estado</label>
+            <select id="n-estado">
+              <option value="CONFIRMADO">CONFIRMADO</option>
+              <option value="PENDIENTE">PENDIENTE</option>
+            </select>
+          </div>
+          <div class="field">
+            <label>Fecha radicación</label>
+            <input type="date" id="n-fecha">
+          </div>
+          <div class="field">
+            <label>Responsable</label>
+            <input list="dl-radicadores" id="n-responsable" placeholder="Escriba o elija (nuevo o existente)">
+            <datalist id="dl-radicadores"></datalist>
+          </div>
+          <div class="field">
+            <label>Cantidad facturas</label>
+            <input type="number" id="n-facturas">
+          </div>
+        </div>
+        <input type="hidden" id="n-edit-id" value="">
+        <div class="error-text" id="form-error"></div>
+        <button class="btn btn-navy" id="btn-save">Guardar registro</button>
+        <button class="btn btn-outline" id="btn-cancel">Cancelar</button>
+      </div>
+
+      <!-- Tarjetas de Métricas KPI -->
+      <div class="kpis" id="kpis"></div>
+
+      <!-- Gráfico Top Entidades y Ranking de Radicadores -->
+      <div class="grid2">
+        <div class="card">
+          <div class="section-title"><h2>Top entidades por valor radicado</h2></div>
+          <div class="chart-wrap">
+            <canvas id="chart-entidades" role="img" aria-label="Gráfico de barras de valor radicado por entidad"></canvas>
+          </div>
+        </div>
+        <div class="card">
+          <div class="section-title"><h2>Ranking de radicadores</h2></div>
+          <div class="table-scroll">
+            <table id="tbl-radicadores">
+              <thead>
+                <tr>
+                  <th>#</th>
+                  <th>Radicador</th>
+                  <th>Valor</th>
+                  <th>Radicados</th>
+                  <th>Facturas</th>
+                </tr>
+              </thead>
+              <tbody></tbody>
+            </table>
+          </div>
+        </div>
+      </div>
+
+      <!-- Tabla Detallada de Entidades -->
+      <div class="card" style="margin-bottom:18px;">
+        <div class="section-title"><h2>Top 20 entidades — detalle</h2></div>
+        <div class="table-scroll">
+          <table id="tbl-entidades">
+            <thead>
+              <tr>
+                <th>#</th>
+                <th>Entidad</th>
+                <th>Valor radicado</th>
+                <th>Radicados</th>
+                <th>Facturas</th>
+              </tr>
+            </thead>
+            <tbody></tbody>
+          </table>
+        </div>
+      </div>
+
+      <!-- Tabla Principal de Registros de Radicación -->
+      <div class="card">
+        <div class="section-title">
+          <h2>Registros de radicación (<span id="reg-count">0</span>)</h2>
+        </div>
+        <div class="table-scroll">
+          <table id="tbl-registros">
+            <thead>
+              <tr>
+                <th>Radicado</th>
+                <th>Entidad</th>
+                <th>Valor</th>
+                <th>Estado</th>
+                <th>Fecha</th>
+                <th>Responsable</th>
+                <th>Facturas</th>
+                <th></th>
+              </tr>
+            </thead>
+            <tbody></tbody>
+          </table>
+        </div>
+        <div class="footer-note">Datos compartidos entre el equipo · guardado automático</div>
+      </div>
+
+      <!-- Sección Histórica Mensual -->
+      <div class="card" style="margin-top:18px;">
+        <div class="section-title"><h2>Histórico de radicación por mes</h2></div>
+        <p class="hint-text">Refleja los filtros de entidad, radicador y estado; muestra todos los meses disponibles.</p>
+        <div class="chart-wrap">
+          <canvas id="chart-historico" role="img" aria-label="Gráfico de línea del valor radicado por mes"></canvas>
+        </div>
+        <div class="table-scroll" style="margin-top:14px;">
+          <table id="tbl-historico">
+            <thead>
+              <tr>
+                <th>Mes</th>
+                <th>Valor radicado</th>
+                <th>Radicados</th>
+                <th>Facturas</th>
+              </tr>
+            </thead>
+            <tbody></tbody>
+          </table>
+        </div>
+      </div>
+
+    </div>
+  </div>
+
+  <!-- Lógica y Scripts Organizados por Módulo -->
+  <script src="js/configuracion-constantes.js"></script>
+  <script src="js/servicio-almacenamiento.js"></script>
+  <script src="js/sistema-alertas.js"></script>
+  <script src="js/auditoria-movimientos.js"></script>
+  <script src="js/autenticacion-usuarios.js"></script>
+  <script src="js/administracion-usuarios.js"></script>
+  <script src="js/filtros-busqueda.js"></script>
+  <script src="js/gestion-radicaciones.js"></script>
+  <script src="js/reportes-graficos.js"></script>
+  <script src="js/importar-exportar-excel.js"></script>
+  <script src="js/inicio-aplicacion.js"></script>
+</body>
+</html>
